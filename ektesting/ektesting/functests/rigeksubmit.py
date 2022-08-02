@@ -42,7 +42,7 @@ class RigEKSubmit(FuncTest):
             group_id=self.group_id, batch_time=60, threshold=10, batch_size=1
         )
 
-        rigekurl = "%s/rigekexploit.html" % settings.webserver
+        rigekurl = f"{settings.webserver}/rigekexploit.html"
         try:
             urllib2.urlopen(rigekurl).read()
         except Exception as e:
@@ -76,8 +76,7 @@ class RigEKSubmit(FuncTest):
             log.debug("Group status still '%s'. Waiting..", group.status)
             time.sleep(5)
 
-        alerts = db.list_alerts(level=3, url_group_name=self.groupname)
-        if alerts:
+        if alerts := db.list_alerts(level=3, url_group_name=self.groupname):
             return self.markpass()
         else:
             return self.markfail(

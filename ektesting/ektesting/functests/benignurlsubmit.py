@@ -82,10 +82,8 @@ class BenignURLSubmit(FuncTest):
                     "datetime", "requested_urls", "signatures"
                 ]
             )
-            if not diary or not diary.get("datetime", 0) > beforefinish:
-                return self.markfail(
-                    "No new URL diary was created for %s" % url
-                )
+            if not diary or diary.get("datetime", 0) <= beforefinish:
+                return self.markfail(f"No new URL diary was created for {url}")
 
             if len(diary.get("requested_urls")):
                 requests_extracted = True
@@ -105,8 +103,7 @@ class BenignURLSubmit(FuncTest):
                     "see if onemon collected any events."
             )
 
-        alerts = db.list_alerts(level=3, url_group_name=self.groupname)
-        if alerts:
+        if alerts := db.list_alerts(level=3, url_group_name=self.groupname):
             return self.markfail(
                 "One or more level 3 alerts was triggered. "
                 "No level 3 alerts should have been sent."

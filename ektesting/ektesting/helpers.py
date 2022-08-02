@@ -17,15 +17,15 @@ class Settings(object):
     event_ip = None
     event_port = None
 
-    def init(cls, cwd, event_ip, event_port, webserver):
+    def init(self, cwd, event_ip, event_port, webserver):
         decide_cwd(cwd)
-        cls.cwd = cwd
-        cls.event_ip = event_ip
-        cls.event_port = event_port
+        self.cwd = cwd
+        self.event_ip = event_ip
+        self.event_port = event_port
         if not webserver.startswith("http://") or \
-                not webserver.startswith("https://"):
-            webserver = "http://%s" % webserver
-        cls.webserver = webserver
+                    not webserver.startswith("https://"):
+            webserver = f"http://{webserver}"
+        self.webserver = webserver
 
 settings = Settings()
 
@@ -83,9 +83,7 @@ def enumerate_plugins(dirpath, module_prefix, namespace, class_,
         if fname.endswith(".py") and not fname.startswith("__init__"):
             module_name, _ = os.path.splitext(fname)
             try:
-                importlib.import_module(
-                    "%s.%s" % (module_prefix, module_name)
-                )
+                importlib.import_module(f"{module_prefix}.{module_name}")
             except ImportError as e:
                 log.error("Failed to import %s", e)
 
@@ -113,9 +111,6 @@ def enumerate_plugins(dirpath, module_prefix, namespace, class_,
         plugins.append(subclass)
 
     if as_dict:
-        ret = {}
-        for plugin in plugins:
-            ret[plugin.__module__.split(".")[-1]] = plugin
-        return ret
+        return {plugin.__module__.split(".")[-1]: plugin for plugin in plugins}
 
     return sorted(plugins, key=lambda x: x.__name__.lower())
